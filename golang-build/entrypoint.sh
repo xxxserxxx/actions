@@ -15,7 +15,7 @@ fi
 root_path="/go/src/github.com/$GITHUB_REPOSITORY"
 release_path="$GITHUB_WORKSPACE/.release"
 repo_name="$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)"
-targets=${@-"darwin/amd64 darwin/386 linux/amd64 linux/386 linux/arm64 linux/arm-7 linux/arm-6 linux/arm-5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"}
+targets=${@-"darwin/amd64 darwin/386 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"}
 
 echo "----> Setting up Go repository"
 mkdir -p $release_path
@@ -23,43 +23,43 @@ mkdir -p $root_path
 cp -a $GITHUB_WORKSPACE/* $root_path/
 cd $root_path
 
-export VERSION=`git tag -l --points-at HEAD`
-if [[ `echo $VERSION | wc -l` -ne 1 ]]; then
-  echo "No (unique) build tag. Using commit."
-  VERSION=v0.0.0
-  VERSION=${VERSION}-`git show -s --format=%cI HEAD | cut -b -19 |  tr -cd '[:digit:]'`
-  VERSION=${VERSION}-`git rev-parse HEAD | cut -b -12`
-fi
+export VERSION=${GITHUB_REF##*/}
 
 for target in $targets; do
-  os="$(echo $target | cut -d '/' -f1)"
-  arch="$(echo $target | cut -d '/' -f2 | cut -d '-' -f1)"
-  archo="$arch"
-  arm="$(echo $target | cut -d '-' -f2)"
-  if [[ $arm == "" ]]; then
-    ARM="GOARM=$arm"
-    archo="${arch}${arm}"
+  export GOOS="$(echo $target | cut -d '/' -f1)"
+  export GOARCH="$(echo $target | cut -d '/' -f2)"
+  archo=$GOARCH
+  cgo="$(echo $target | cut -d '/' -f3)"
+  if [[ $GOARCH == arm[567] ]]; then
+    export GOARM=$(echo $GOARCH | tr -d '[:alpha:]')
+    export GOARCH=arm
   fi
-  if [[ $os == "darwin" ]]; then
+  if [[ $cgo == "" ]]; then
+    export CGO_ENABLED=0
+  else
+    export CGO_ENABLED=1
+  fi
+  if [[ $GOOS == "darwin" ]]; then
     export MACOSX_DEPLOYMENT_TARGET=10.10.0 
     export CC=o64-clang 
     export CXX=o64-clang++ 
   fi
-  output="${release_path}/${repo_name}_${os}_${archo}"
+  output="${release_path}/${repo_name}_${VERSION}_${GOOS}_${archo}"
 
   echo "----> Building project for: $target"
-  GOOS=$os GOARCH=$arch CGO_ENABLED=1 go build -o $output
+  go build -o $output
 
   if [[ -n "$COMPRESS_FILES" ]]; then
-    if [[ $os == "windows" ]]; then
+    if [[ $GOOS == "windows" ]]; then
       zip -j $output.zip $output > /dev/null
     else
-      tar -czf $output.tgz $output
+      tar -czf $output.tgz -C $(dirname $output) $(basename $output)
     fi
     rm $output
   fi
+  unset GOOS GOARCH GOARM CGO_ENABLED
 done
 
-echo "----> Build is complete. List of files at $release_path:"
+echo "----> Build is complete. List of files in ${release_path}/:"
 cd $release_path
 ls -al

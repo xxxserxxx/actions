@@ -2,9 +2,7 @@
 
 Github Action to cross-compile Go project binaries for multiple platforms in a single run.
 
-Uses `golang:1.14` Docker image with `CGO_ENABLED=1` flag.
-
-Based on the dockercore/golang-cross Dockerfile, which provides Darwin headers for CGO.
+This fork is based on a copy of dockercore/golang-cross which includes headers and support cross-compiling for Darwin and Windows using CGO.  The copy is updated to Go 1.14, and this fork will be updated to use dockercore/golang-cross directly as soon as they update from Go 1.13.  This fork also adds all of the ARM architectures, and provides syntax to enable CGO on specific OS/ARCH combinations.
 
 ## Usage
 
@@ -26,20 +24,29 @@ jobs:
         uses: xxxserxxx/actions/golang-build@master
 ```
 
-Basic workflow configuration will compile binaries for the following platforms:
+Basic workflow configuration will compile binaries for the following platforms,
+with CGO disabled:
 
 - linux: 386/amd64/arm5/arm6/arm7/aarch64
 - darwin: 386/amd64
 - windows: 386/amd64 
 
-Alternatively you can provide a list of target architectures in `arg`:
+Alternatively you can provide a list of target architectures in `arg`. The format of the args is OS/ARCH[/CGO]
+
+- GO is linux, darwin, windows, or freebsd
+- ARCH is 386, amd64, arm5, arm6, arm7, or aarch64
+- CGO is 0 or 1 (defaults to 0)
+
+For example:
 
 ```yml
 - name: Make binaries
   uses: xxxserxxx/actions/golang-build@master
   with:
-    args: linux/amd64 darwin/amd64
+    args: linux/amd64 darwin/amd64/1
 ```
+
+will produce two compile GOOS=Linux, GOARCH=amd64, and CGO_ENABLED=0; and GOOS=darwin, GOARCH=amd64, and CGO_ENABLED=1.
 
 Example output:
 
