@@ -2,7 +2,9 @@
 
 Github Action to cross-compile Go project binaries for multiple platforms in a single run.
 
-Uses `golang:1.13` Docker image with `CGO_ENABLED=0` flag.
+Uses `golang:1.14` Docker image with `CGO_ENABLED=1` flag.
+
+Based on the dockercore/golang-cross Dockerfile, which provides Darwin headers for CGO.
 
 ## Usage
 
@@ -21,12 +23,12 @@ jobs:
         uses: actions/checkout@master
 
       - name: Make binaries
-        uses: sosedoff/actions/golang-build@master
+        uses: xxxserxxx/actions/golang-build@master
 ```
 
 Basic workflow configuration will compile binaries for the following platforms:
 
-- linux: 386/amd64
+- linux: 386/amd64/arm5/arm6/arm7/aarch64
 - darwin: 386/amd64
 - windows: 386/amd64 
 
@@ -34,7 +36,7 @@ Alternatively you can provide a list of target architectures in `arg`:
 
 ```yml
 - name: Make binaries
-  uses: sosedoff/actions/golang-build@master
+  uses: xxxserxxx/actions/golang-build@master
   with:
     args: linux/amd64 darwin/amd64
 ```
