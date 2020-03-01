@@ -5,16 +5,23 @@ pkgver=$1
 set -x
 
 # Verify the PKGBUILD
-namcap PKGBUILD
-[[ $? -ne 0 ]] && exit 1
+r=$(namcap PKGBUILD)
+if [[ $r != "" ]]; then
+    echo $r
+    exit 1
+fi
 
-for f in *.gz; do
+arch=$(uname -m)
+for f in *${arch}.pkg.tar.xz; do
     # Verify the built package
-    namcap $f
-    [[ $? -ne 0 ]] && exit 1
+    #r=$(namcap $f)
+    #if [[ $r != "" ]]; then
+    #    echo $r
+    #    exit 1
+    #fi
 
     # Install the package
-    pacman -U $f
+    sudo pacman -U --noconfirm $f
     [[ $? -ne 0 ]] && exit 1
 
     # Test that the program runs
@@ -22,10 +29,11 @@ for f in *.gz; do
     [[ $? -ne 0 ]] && exit 1
 
     # Test that the right version was installed
-    [[ $vers -ne $pkgver ]] && exit 1
+    [[ $vers != $pkgver ]] && exit 1
 
     # Uninstall the package
-    pacman -R $f
+    pkn=$(echo $f | sed "s/\(^.*\)-${pkgver}.*/\1/")
+    sudo pacman -R --noconfirm $pkn
     [[ $? -ne 0 ]] && exit 1
 done
 

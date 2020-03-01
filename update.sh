@@ -7,7 +7,7 @@ for d in aur aur-bin; do
     pushd $d
 
     # Build the packages
-    ../make.sh $pkgver
+    ../build.sh $pkgver
     ex=$?
     if [[ $ex -ne 0 ]]; then
         popd
@@ -22,8 +22,7 @@ for d in aur aur-bin; do
         echo FAILED $d
         exit $ex
     fi
+    popd
 done
-
-popd
 
 exit 0

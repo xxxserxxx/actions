@@ -11,7 +11,7 @@ url="https://github.com/xxxserxxx/gotop"
 license=(AGPL3)
 makedepends=(go)
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-sha256sums=('80ff7c3cf89f0ebe97848b798dde466a6bb932b284a3330c7777d1968d77b36c')
+depends=("glibc")
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
@@ -26,3 +26,4 @@ build() {
 package() {
   install -Dm755 "${srcdir}"/${pkgname}-${pkgver}/gotop "${pkgdir}"/usr/bin/gotop
 }
+md5sums=('b1c47153ff19dd290cecb7c28624c44f')
