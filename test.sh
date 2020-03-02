@@ -2,37 +2,44 @@
 
 pkgver=$1
 
-set -x
+urldecode() {
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
 
-# Verify the PKGBUILD
-r=$(namcap PKGBUILD)
-if [[ $r != "" ]]; then
-    echo $r
-    exit 1
-fi
+function runTests() {
+    for test in $_tests; do
+        local t=$(echo "$test" | cut -d '=' -f 1)
+        local e=$(echo "$test" | cut -d '=' -f 2)
+        local command=$(urldecode "$t")
+        local expected=$(urldecode "$e")
+        local got=$(eval "$command")
+        if [[ $got != $expected ]]; then
+            echo "'$command' expected '$expected', got '$got'"
+            return 1
+        fi
+    done
+    return 0
+}
+
+set -x
 
 arch=$(uname -m)
 for f in *${arch}.pkg.tar.xz; do
-    # Verify the built package
-    #r=$(namcap $f)
-    #if [[ $r != "" ]]; then
-    #    echo $r
-    #    exit 1
-    #fi
-
     # Install the package
+    pkn=$(echo $f | sed "s/\(^.*\)-${pkgver}.*/\1/")
+
     sudo pacman -U --noconfirm $f
     [[ $? -ne 0 ]] && exit 1
 
     # Test that the program runs
-    vers=`gotop -V`
-    [[ $? -ne 0 ]] && exit 1
-
-    # Test that the right version was installed
-    [[ $vers != $pkgver ]] && exit 1
+    res=$(runTests)
+    if [[ $res -ne 0 ]]; then
+        sudo pacman -R --noconfirm $pkn
+        exit 1
+    fi
 
     # Uninstall the package
-    pkn=$(echo $f | sed "s/\(^.*\)-${pkgver}.*/\1/")
     sudo pacman -R --noconfirm $pkn
     [[ $? -ne 0 ]] && exit 1
 done
