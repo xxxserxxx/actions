@@ -28,6 +28,7 @@ export VERSION=${GITHUB_REF##*/}
 for target in $targets; do
   export GOOS="$(echo $target | cut -d '/' -f1)"
   export GOARCH="$(echo $target | cut -d '/' -f2)"
+  pie=""
   archo=$GOARCH
   cgo="$(echo $target | cut -d '/' -f3)"
   if [[ $GOARCH == arm[567] ]]; then
@@ -44,10 +45,13 @@ for target in $targets; do
     export CC=o64-clang 
     export CXX=o64-clang++ 
   fi
+  if [[ $GOOS == "linux" ]]; then
+    export pie="--buildmode=pie"
+  fi
   output="${release_path}/${repo_name}_${VERSION}_${GOOS}_${archo}"
 
   echo "----> Building project for: $target"
-  go build --buildmode=pie -o $output
+  go build $pie -o $output
 
   if [[ -n "$COMPRESS_FILES" ]]; then
     if [[ $GOOS == "windows" ]]; then
