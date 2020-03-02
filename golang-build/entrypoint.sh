@@ -47,7 +47,7 @@ for target in $targets; do
   output="${release_path}/${repo_name}_${VERSION}_${GOOS}_${archo}"
 
   echo "----> Building project for: $target"
-  go build -o $output
+  go build --buildmode=pie -o $output
 
   if [[ -n "$COMPRESS_FILES" ]]; then
     if [[ $GOOS == "windows" ]]; then
