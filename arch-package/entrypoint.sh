@@ -67,8 +67,6 @@ function buildPackages() {
 
     makepkg --printsrcinfo > .SRCINFO
     [[ $? -ne 0 ]] && exit 1
-
-    makepkg -f
 }
 
 
@@ -77,29 +75,20 @@ function buildPackages() {
 # 2. Tests the packages
 # 3. Publishes the packages
 function update() {
-    for d in aur aur-bin; do
-        pushd $d
+    pushd aur
+    # Build the packages
+    buildPackages
+    makepkg -f
+    [[ $? -ne 0 ]] && exit 1
+    # Test the packages
+    testPackages
+    popd
 
-        # Build the packages
-        buildPackages
-        ex=$?
-        if [[ $ex -ne 0 ]]; then
-            popd
-            echo FAILED $d
-            exit $ex
-        fi
+    pushd aur-bin
+    # Build the packages
+    buildPackages
 
-        # Test the packages
-        testPackages
-        if [[ $ex -ne 0 ]]; then
-            popd
-            echo FAILED $d
-            exit $ex
-        fi
-        popd
-
-        aurpublish log $d
-    done
+    aurpublish log $d
 }
 
 set -x
