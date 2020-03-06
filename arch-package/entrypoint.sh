@@ -35,9 +35,10 @@ function runTests() {
 # Call from within a directory containing packages
 function testPackages() {
     arch=$(uname -m)
+    local V=${VERSION#v}
     for f in *${arch}.pkg.tar.xz; do
         # Install the package
-        pkn=$(echo $f | sed "s/\(^.*\)-${VERSION}.*/\1/")
+        pkn=$(echo $f | sed "s/\(^.*\)-${V}.*/\1/")
 
         pacman -U --noconfirm $f
         [[ $? -ne 0 ]] && exit 1
