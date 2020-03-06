@@ -9,7 +9,8 @@ LABEL "com.github.actions.description"="For updating, building, and testing AUR 
 LABEL "com.github.actions.icon"="package"
 LABEL "com.github.actions.color"="#E0EBF5"
 
-RUN pacman -S aurpublish 
+RUN pacman --noconfirm -Sy
+RUN pacman --noconfirm -S aurpublish 
 
 COPY entrypoint.sh /entrypoint.sh
 
