@@ -39,18 +39,18 @@ function testPackages() {
         # Install the package
         pkn=$(echo $f | sed "s/\(^.*\)-${VERSION}.*/\1/")
 
-        sudo pacman -U --noconfirm $f
+        pacman -U --noconfirm $f
         [[ $? -ne 0 ]] && exit 1
 
         # Test that the program runs
         runTests
         if [[ $res -ne 0 ]]; then
-            sudo pacman -R --noconfirm $pkn
+            pacman -R --noconfirm $pkn
             exit 1
         fi
 
         # Uninstall the package
-        sudo pacman -R --noconfirm $pkn
+        pacman -R --noconfirm $pkn
         [[ $? -ne 0 ]] && exit 1
     done
 }
