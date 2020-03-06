@@ -102,6 +102,8 @@ function update() {
 
 set -x
 
+# Fix makepkg to allow RUNNING AS ROOT in containers.  For christ's sake.
+sed -i '/\n/!N;/\n.*\n/!N;/\n.*\n.*catastrophic damage/{$d;N;N;d};P;D' `which makepkg`
 update
 
 exit 0
