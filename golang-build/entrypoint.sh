@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -x
 
 if [[ -z "$GITHUB_WORKSPACE" ]]; then
   echo "Set the GITHUB_WORKSPACE env variable."
@@ -26,31 +25,32 @@ cd $root_path
 
 export VERSION=${GITHUB_REF##*/}
 
-for target in $targets; do
-  export GOOS="$(echo $target | cut -d '/' -f1)"
-  export GOARCH="$(echo $target | cut -d '/' -f2)"
-  pie=""
-  archo=$GOARCH
-  cgo="$(echo $target | cut -d '/' -f3)"
+function compile() {
+  local target=$1
+  local GOOS="$(echo $target | cut -d '/' -f1)"
+  local GOARCH="$(echo $target | cut -d '/' -f2)"
+  local pie=""
+  local archo=$GOARCH
+  local cgo="$(echo $target | cut -d '/' -f3)"
   if [[ $GOARCH == arm[567] ]]; then
-    export GOARM=$(echo $GOARCH | tr -d '[:alpha:]')
-    export GOARCH=arm
+    local GOARM=$(echo $GOARCH | tr -d '[:alpha:]')
+    local GOARCH=arm
   fi
   if [[ $cgo == "" ]]; then
-    export CGO_ENABLED=0
+    local CGO_ENABLED=0
   else
-    export CGO_ENABLED=1
+    local CGO_ENABLED=1
   fi
   if [[ $GOOS == "darwin" ]]; then
-    export MACOSX_DEPLOYMENT_TARGET=10.10.0 
-    export CC=o64-clang 
-    export CXX=o64-clang++ 
+    local MACOSX_DEPLOYMENT_TARGET=10.10.0 
+    local CC=o64-clang 
+    local CXX=o64-clang++ 
   fi
   if [[ $GOOS == "linux" ]]; then
-    export pie="--buildmode=pie"
+    local pie="--buildmode=pie"
   fi
-  asset="${repo_name}_${VERSION}_${GOOS}_${archo}"
-  output="${release_path}/${asset}"
+  local asset="${repo_name}_${VERSION}_${GOOS}_${archo}"
+  local output="${release_path}/${asset}"
 
   echo "----> Building project for: $target"
   go build $pie -o $output $SRCPATH
@@ -63,7 +63,10 @@ for target in $targets; do
     fi
     rm $output
   fi
-  unset GOOS GOARCH GOARM CGO_ENABLED
+}
+
+for target in $targets; do
+  compile $target
 done
 
 echo "----> Build is complete. List of files in ${release_path}/:"
