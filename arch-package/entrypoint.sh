@@ -58,7 +58,8 @@ function testPackages() {
 # Update and build the packages.
 # Call from the directory containing the PKGBUILD
 function buildPackages() {
-    sed -i "s/^pkgver=.*/pkgver=$VERSION/; /^sha256sums/d; /^md5sums/d" PKGBUILD
+    local V=${VERSION#v}
+    sed -i "s/^pkgver=.*/pkgver=$V/; /^sha256sums/d; /^md5sums/d" PKGBUILD
 
     makepkg -g >> PKGBUILD
     [[ $? -ne 0 ]] && exit 1
