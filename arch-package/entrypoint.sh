@@ -43,7 +43,7 @@ function testPackages() {
         [[ $? -ne 0 ]] && exit 1
 
         # Test that the program runs
-        res=$(runTests)
+        runTests
         if [[ $res -ne 0 ]]; then
             sudo pacman -R --noconfirm $pkn
             exit 1
@@ -101,7 +101,7 @@ function update() {
 }
 
 set -x
-update()
-set +x
+
+update
 
 exit 0
