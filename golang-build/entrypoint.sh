@@ -48,16 +48,17 @@ for target in $targets; do
   if [[ $GOOS == "linux" ]]; then
     export pie="--buildmode=pie"
   fi
-  output="${release_path}/${repo_name}_${VERSION}_${GOOS}_${archo}"
+  asset="${repo_name}_${VERSION}_${GOOS}_${archo}"
+  output="${release_path}/${asset}"
 
   echo "----> Building project for: $target"
-  go build $pie -o $output
+  go build $pie -o $output $SRCPATH
 
   if [[ -n "$COMPRESS_FILES" ]]; then
     if [[ $GOOS == "windows" ]]; then
       zip -j $output.zip $output > /dev/null
     else
-      tar -czf $output.tgz -C $(dirname $output) $(basename $output)
+      tar -czf $output.tgz -C "${release_path}" "${asset}"
     fi
     rm $output
   fi

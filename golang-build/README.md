@@ -22,7 +22,11 @@ jobs:
 
       - name: Make binaries
         uses: xxxserxxx/actions/golang-build@master
+        env:
+          SRCPATH: ./cmd/mycmd
 ```
+
+The `SRCPATH` variable is optional, and allows you to specify the path to the source build directory; if left blank, it will build whatever code is at the top of the repository.
 
 Basic workflow configuration will compile binaries for the following platforms,
 with CGO disabled:
