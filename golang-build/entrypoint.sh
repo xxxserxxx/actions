@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 if [[ -z "$GITHUB_WORKSPACE" ]]; then
   echo "Set the GITHUB_WORKSPACE env variable."
