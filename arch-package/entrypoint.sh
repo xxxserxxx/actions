@@ -82,11 +82,13 @@ function update() {
     [[ $? -ne 0 ]] && exit 1
     # Test the packages
     testPackages
+    git clean -f -d
     popd
 
     pushd aur-bin
     # Build the packages
     buildPackages
+    git clean -f -d
 
     aurpublish log aur aur-bin
 }
