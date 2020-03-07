@@ -88,7 +88,7 @@ function update() {
     # Build the packages
     buildPackages
 
-    aurpublish log $d
+    aurpublish log aur aur-bin
 }
 
 set -x
@@ -96,5 +96,7 @@ set -x
 # Fix makepkg to allow RUNNING AS ROOT in containers.  For christ's sake.
 sed -i '/catastrophic damage/{n;d}' /usr/bin/makepkg
 update
+
+git clean -fd
 
 exit 0
