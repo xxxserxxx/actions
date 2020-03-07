@@ -2,8 +2,8 @@
 #
 # USAGE: $0 REPO SRCPATH INPUT_ARGS
 
-if [[ $# -lt 3 ]]; then
-    echo "USAGE: $0 <repo> <srcpath> <input_args>"
+if [[ $# -lt 2 ]]; then
+    echo "USAGE: $0 <repo> <srcpath> [input_args]"
     echo
     echo "Example:"
     echo "   $0 https://github.com/xxxserxxx/gotop ./cmd/gotop \"linux/amd64\""
@@ -12,7 +12,13 @@ fi
 
 export REPO=$1
 export SRCPATH=$2
-export INPUT_ARGS=$3
+
+if [[ $# -lt 3 ]]; then
+  export INPUT_ARGS="darwin/amd64/1 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"
+else
+  export INPUT_ARGS="$3"
+fi
+
 export COMPRESS_FILES=true
 
 echo "################################################################################"

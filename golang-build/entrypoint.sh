@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# FIXME: allow building plugins
+
 set -e
 
 if [[ -z "$GITHUB_WORKSPACE" ]]; then
@@ -56,12 +58,20 @@ function compile() {
   go build $pie -o $output $SRCPATH
 
   if [[ -n "$COMPRESS_FILES" ]]; then
-    if [[ $GOOS == "windows" ]]; then
-      zip -j $output.zip $output > /dev/null
+    if [[ -n "$SRCPATH" ]]; then 
+      local exe="${release_path}/$(basename $SRCPATH)"
     else
-      tar -czf $output.tgz -C "${release_path}" "${asset}"
+      local exe="${release_path}/${repo_name}"
     fi
-    rm $output
+    mv "$output" "${exe}"
+    if [[ $GOOS == "windows" ]]; then
+      mv "${exe}" "${exe}.exe"
+      exe="${exe}.exe"
+      zip -j "$output.zip" "${exe}" > /dev/null
+    else
+      tar -czf "$output.tgz" -C "${release_path}" $(basename "${exe}")
+    fi
+    rm $exe
   fi
 }
 
