@@ -102,5 +102,6 @@ sed -i '/catastrophic damage/{n;d}' /usr/bin/makepkg
 update
 
 git clean -fd
+rm -rf aur/src
 
 exit 0
