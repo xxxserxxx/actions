@@ -83,12 +83,14 @@ function update() {
     # Test the packages
     testPackages
     git clean -f -d
+    rm -rf src
     popd
 
     pushd aur-bin
     # Build the packages
     buildPackages
     git clean -f -d
+    popd
 
     aurpublish log aur aur-bin
 }
