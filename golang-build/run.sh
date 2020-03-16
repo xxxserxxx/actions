@@ -43,7 +43,7 @@ git remote add origin $REPO
 git config --local gc.auto 0
 git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
 git submodule foreach --recursive git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader && git config --local --unset-all http.https://github.com/.extraheader || :
-git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin
+git -c protocol.version=2 fetch --tags --prune --progress --no-recurse-submodules --depth=1 origin
 export GITHUB_REF=$(git show-ref | tail -1 | cut -d ' ' -f 2)
 git checkout --progress --force $GITHUB_REF
 popd

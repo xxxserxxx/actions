@@ -31,22 +31,26 @@ function compile() {
   local target=$1
   local GOOS="$(echo $target | cut -d '/' -f1)"
   local GOARCH="$(echo $target | cut -d '/' -f2)"
+  export GOOS GOARCH
   local pie=""
   local archo=$GOARCH
   local cgo="$(echo $target | cut -d '/' -f3)"
   if [[ $GOARCH == arm[567] ]]; then
     local GOARM=$(echo $GOARCH | tr -d '[:alpha:]')
     local GOARCH=arm
+	export GOARM GOARCH
   fi
   if [[ $cgo == "" ]]; then
     local CGO_ENABLED=0
   else
     local CGO_ENABLED=1
   fi
+  export CGO_ENABLED
   if [[ $GOOS == "darwin" ]]; then
     local MACOSX_DEPLOYMENT_TARGET=10.10.0 
     local CC=o64-clang 
     local CXX=o64-clang++ 
+	export MACOSX_DEPLOYMENT_TARGET CC CXX
   fi
   if [[ $GOOS == "linux" ]]; then
     local pie="--buildmode=pie"
