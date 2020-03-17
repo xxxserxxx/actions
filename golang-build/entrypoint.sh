@@ -52,7 +52,7 @@ function compile() {
     local CXX=o64-clang++ 
 	export MACOSX_DEPLOYMENT_TARGET CC CXX
   fi
-  if [[ $GOOS == "linux" ]]; then
+  if [[ $GOOS == "linux" && $GOARCH == "amd64" ]]; then
     local pie="--buildmode=pie"
   fi
   local asset="${repo_name}_${VERSION}_${GOOS}_${archo}"
