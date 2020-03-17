@@ -23,6 +23,21 @@ export COMPRESS_FILES=true
 
 echo "################################################################################"
 echo "Make container"
+if [[ `docker images | grep builder` != "" ]]; then 
+    # Check that the builder image is up-to-date
+    entr=`date -r entrypoint.sh`
+    dock=`date -r Dockerfile`
+    imag=`docker inspect builder | jq -r '.[0].Created'`
+
+    imag_ts=`date -d "$imag" +%s`
+    dock_ts=`date -d "$dock" +%s`
+    entr_ts=`date -d "$entr" +%s`
+
+    if [[ $imag_ts -lt $entr_ts || $imag_ts -lt $dock_ts ]]
+    then
+        docker rmi builder
+    fi
+fi
 if [[ `docker images | grep builder` == "" ]]; then 
     docker build -t builder .
     [[ $? -ne 0 ]] && exit 1
