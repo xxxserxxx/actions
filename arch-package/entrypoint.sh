@@ -65,8 +65,7 @@ function buildPackages() {
     updpkgsums
     [[ $? -ne 0 ]] && exit 1
 
-    # FIXME makepkg shouldn't be run as root. Patched to make it work, but it still generates fake errors. Find a better way.
-    makepkg --printsrcinfo > .SRCINFO
+	curl -s https://hg.sr.ht/~ser/printsrcinfo/raw/default/printsrcinfo | bash > .SRCINFO
     [[ $? -ne 0 ]] && exit 1
 }
 
