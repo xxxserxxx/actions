@@ -10,7 +10,7 @@ LABEL "com.github.actions.icon"="package"
 LABEL "com.github.actions.color"="#E0EBF5"
 
 RUN pacman --noconfirm -Sy
-RUN pacman --noconfirm -S aurpublish binutils fakeroot go gcc
+RUN pacman --noconfirm -S aurpublish binutils fakeroot go gcc pacman-contrib
 
 COPY entrypoint.sh /entrypoint.sh
 

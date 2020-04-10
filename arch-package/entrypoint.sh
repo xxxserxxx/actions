@@ -62,9 +62,10 @@ function buildPackages() {
     local V=${VERSION#v}
     sed -i "s/^pkgver=.*/pkgver=$V/; /^sha256sums/d; /^md5sums/d" PKGBUILD
 
-    makepkg -g >> PKGBUILD
+    updpkgsums
     [[ $? -ne 0 ]] && exit 1
 
+    # FIXME makepkg shouldn't be run as root. Patched to make it work, but it still generates fake errors. Find a better way.
     makepkg --printsrcinfo > .SRCINFO
     [[ $? -ne 0 ]] && exit 1
 }
