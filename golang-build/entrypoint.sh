@@ -19,13 +19,16 @@ release_path="$GITHUB_WORKSPACE/.release"
 repo_name="$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)"
 targets=${@-"darwin/amd64 darwin/386 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"}
 
+pushd $GITHUB_WORKSPACE
+export VERSION=${GITHUB_REF##*/}
+[[ -z $VERSION ]] && VERSION=$(git describe --tags)
+popd
+
 echo "----> Setting up Go repository"
 mkdir -p $release_path
 mkdir -p $root_path
 cp -a $GITHUB_WORKSPACE/* $root_path/
 cd $root_path
-
-export VERSION=${GITHUB_REF##*/}
 
 function compile() {
   local target=$1
@@ -59,7 +62,8 @@ function compile() {
   local output="${release_path}/${asset}"
 
   echo "----> Building project for: $target"
-  go build $pie -o $output $SRCPATH
+  BUILDDATE=`date +%Y%m%dT%H%M%S`
+  go build -ldflags="-X main.Version=${VERSION} -X main.BuildDate=${BUILDDATE}" $pie -o $output $SRCPATH
 
   if [[ -n "$COMPRESS_FILES" ]]; then
     if [[ -n "$SRCPATH" ]]; then 

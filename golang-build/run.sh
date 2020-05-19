@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-# USAGE: $0 REPO SRCPATH INPUT_ARGS
+# USAGE: $0 REPO SRCPATH INPUT_ARGS [GITREF]
 
 if [[ $# -lt 2 ]]; then
-    echo "USAGE: $0 <repo> <srcpath> [input_args]"
+    echo "USAGE: $0 <repo> <srcpath> [input_args] [version]"
     echo
     echo "Example:"
     echo "   $0 https://github.com/xxxserxxx/gotop ./cmd/gotop \"linux/amd64\""
@@ -17,6 +17,10 @@ if [[ $# -lt 3 ]]; then
   export INPUT_ARGS="darwin/amd64/1 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"
 else
   export INPUT_ARGS="$3"
+fi
+
+if [[ $# -eq 4 ]];then
+    export GITHUB_REF=$4
 fi
 
 export COMPRESS_FILES=true
@@ -59,7 +63,7 @@ git config --local gc.auto 0
 git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
 git submodule foreach --recursive git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader && git config --local --unset-all http.https://github.com/.extraheader || :
 git -c protocol.version=2 fetch --tags --prune --progress --no-recurse-submodules --depth=1 origin
-export GITHUB_REF=$(git show-ref | tail -1 | cut -d ' ' -f 2)
+[[ -z $GITHUB_REF ]] && export GITHUB_REF=$(git show-ref | tail -1 | cut -d ' ' -f 2)
 git checkout --progress --force $GITHUB_REF
 popd
 
