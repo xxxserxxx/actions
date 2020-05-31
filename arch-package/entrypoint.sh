@@ -65,7 +65,7 @@ function buildPackages() {
     updpkgsums
     [[ $? -ne 0 ]] && exit 1
 
-    curl -s https://hg.sr.ht/~ser/printsrcinfo/raw/printsrcinfo | bash > .SRCINFO
+    curl -s https://hg.sr.ht/\~ser/printsrcinfo/raw/printsrcinfo | bash > .SRCINFO
     [[ $? -ne 0 ]] && exit 1
 }
 
