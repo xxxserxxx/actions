@@ -48,10 +48,10 @@ The (optional) arguments is list of tests that are run during the process. Each 
 
 The action is performing these steps:
 
-1. Package the `aur/PKGBUILD` (source code) package, including updating the PKGBUILD hashes and .SRCINFO metadata
+1. Package the `gotop/PKGBUILD` (source code) package, including updating the PKGBUILD hashes and .SRCINFO metadata
 2. Install the resulting package 
 3. Run any tests
 4. Publish the AUR
-5. Repeat for `aur-bin/PKGBUILD`
+5. Repeat for `gotop-bin/PKGBUILD`
 
 The tool uses [aurpublish](https://github.com/eli-schwartz/aurpublish) to publish the packages.

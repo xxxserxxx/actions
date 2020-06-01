@@ -70,12 +70,12 @@ function buildPackages() {
 }
 
 
-# Main loop; enters aur and aur-bin, and in each:
+# Main loop; enters gotop and gotop-bin, and in each:
 # 1. Builds the packages
 # 2. Tests the packages
 # 3. Publishes the packages
 function update() {
-    pushd aur
+    pushd gotop
     # Build the packages
     buildPackages
     makepkg -f
@@ -86,13 +86,13 @@ function update() {
     rm -rf src
     popd
 
-    pushd aur-bin
+    pushd gotop-bin
     # Build the packages
     buildPackages
     git clean -f -d
     popd
 
-    aurpublish log aur aur-bin
+    aurpublish log gotop gotop-bin
 }
 
 set -x
@@ -102,6 +102,6 @@ sed -i '/catastrophic damage/{n;d}' /usr/bin/makepkg
 update
 
 git clean -fd
-rm -rf aur/src
+rm -rf gotop/src
 
 exit 0
