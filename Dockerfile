@@ -15,8 +15,9 @@ ARG OSX_CROSS_COMMIT=a9317c18a3a457ca0a657f08cc4d0d43c6cf8953
 
 # Libtool parameters
 ARG LIBTOOL_VERSION=2.4.6
+ARG LIBOLM_VERSION=3.1.4
 
-# TODO Go 1.13 supports macOS 10.11 (el capitan) and higher. Update this to 'el_capitan'
+# TODO Go 1.14 supports macOS 10.11 (el capitan) and higher. Update this to 'el_capitan'
 # once an updated version of the SDK is available on s3.dockerproject.org
 ARG OSX_CODENAME=yosemite
 
@@ -42,6 +43,7 @@ RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
     llvm \
     patch \
     xz-utils \
+    libolm-dev \
  && rm -rf /var/lib/apt/lists/*
 
 FROM osx-cross-base AS osx-cross
@@ -66,6 +68,17 @@ RUN curl -fsSL "https://homebrew.bintray.com/bottles/libtool-${LIBTOOL_VERSION}.
 		"libtool/${LIBTOOL_VERSION}/include/" \
 		"libtool/${LIBTOOL_VERSION}/lib/"
 
+FROM base AS libolm
+ARG LIBOLM_VERSION
+ARG OSX_SDK
+RUN mkdir -p "${OSX_CROSS_PATH}/target/SDK/${OSX_SDK}/usr/"
+RUN curl -fsSL "https://homebrew.bintray.com/bottles/libolm-${LIBOLM_VERSION}.high_sierra.bottle.tar.gz" \
+	| gzip -dc | tar xf - \
+		-C "${OSX_CROSS_PATH}/target/SDK/${OSX_SDK}/usr/" \
+		--strip-components=2 \
+		"libolm/${LIBOLM_VERSION}/include/" \
+		"libolm/${LIBOLM_VERSION}/lib/"
+
 FROM osx-cross-base AS final
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
@@ -76,4 +89,5 @@ RUN apt-get update -qq && apt-get install -y -q --no-install-recommends \
 
 COPY --from=osx-cross "${OSX_CROSS_PATH}/." "${OSX_CROSS_PATH}/"
 COPY --from=libtool   "${OSX_CROSS_PATH}/." "${OSX_CROSS_PATH}/"
+COPY --from=libolm   "${OSX_CROSS_PATH}/." "${OSX_CROSS_PATH}/"
 ENV PATH=${OSX_CROSS_PATH}/target/bin:$PATH
