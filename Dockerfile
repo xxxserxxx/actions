@@ -20,7 +20,7 @@ ARG LIBTOOL_VERSION=2.4.6
 # once an updated version of the SDK is available on s3.dockerproject.org
 ARG OSX_CODENAME=yosemite
 
-FROM golang:${GO_VERSION}-buster AS base
+FROM golang:buster AS base
 ARG APT_MIRROR
 RUN sed -ri "s/(httpredir|deb).debian.org/${APT_MIRROR:-deb.debian.org}/g" /etc/apt/sources.list \
  && sed -ri "s/(security).debian.org/${APT_MIRROR:-security.debian.org}/g" /etc/apt/sources.list
