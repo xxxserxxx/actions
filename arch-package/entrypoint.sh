@@ -17,13 +17,9 @@ function urldecode() {
 # Runs tests defined in the $_tests variable.
 function runTests() {
     for test in $_tests; do
-        local t=$(echo "$test" | cut -d '=' -f 1)
-        local e=$(echo "$test" | cut -d '=' -f 2)
-        local command=$(urldecode "$t")
-        local expected=$(urldecode "$e")
-        local got=$(eval "$command")
-        if [[ $got != $expected ]]; then
-            echo "'$command' expected '$expected', got '$got'"
+        $($test)
+        if [[ $? -ne 0 ]]; then
+            echo "'$test' failed with $?"
             exit 1
         fi
     done
