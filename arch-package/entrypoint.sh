@@ -17,7 +17,8 @@ function urldecode() {
 # Runs tests defined in the $_tests variable.
 function runTests() {
     for test in $_tests; do
-        $($test)
+        local command=$(urldecode "$test")
+        eval $command
         if [[ $? -ne 0 ]]; then
             echo "'$test' failed with $?"
             exit 1
