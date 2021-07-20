@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# For building locally (e.g., on a laptop)
+#
 # USAGE: $0 REPO SRCPATH INPUT_ARGS [GITREF]
 
 if [[ $# -lt 2 ]]; then
