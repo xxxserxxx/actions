@@ -1,4 +1,4 @@
-FROM docker.io/goreng/golang-cross-builder:v1.16.2
+FROM docker.io/illuspas/xcgo:1.16.6
 
 LABEL "name"="Go Builder"
 LABEL "maintainer"="Sean Russell <ser@ser1.net>"
