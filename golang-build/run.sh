@@ -95,7 +95,7 @@ export GITHUB_WORKSPACE=/github/workspace
    -e SRCPATH \
    -v "$WORKDIR/$PROJECT/$PROJECT":"$GITHUB_WORKSPACE" \
    builder \
-   $INPUT_ARGS
+   "$INPUT_ARGS"
 
 echo To update the image or entrypoint.sh file, you must remove the builder image:
 echo

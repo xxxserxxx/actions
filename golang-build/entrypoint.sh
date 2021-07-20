@@ -15,7 +15,7 @@ fi
 root_path="/go/src/github.com/$GITHUB_REPOSITORY"
 release_path="$GITHUB_WORKSPACE/.release"
 repo_name="$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)"
-targets=${@-"darwin/amd64 darwin/arm64 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64 windows/386 freebsd/amd64 freebsd/386"}
+targets=${@-"darwin/amd64/1 darwin/arm64/1 linux/amd64 linux/386 linux/arm64 linux/arm7 linux/arm6 linux/arm5 windows/amd64/1 windows/386/1 freebsd/amd64/1"}
 
 pushd $GITHUB_WORKSPACE
 export VERSION=${GITHUB_REF##*/}
@@ -110,12 +110,13 @@ function compile() {
   [[ $CGO_ENABLED -eq 1 ]] && echo -n " CGO"
   echo ""
   BUILDDATE=`date +%Y%m%dT%H%M%S`
-  echo "----> ENVIRONMENT"
   go build -ldflags="-X main.Version=${VERSION} -X main.BuildDate=${BUILDDATE} -s -w" $pie -o $output $SRCPATH
 
-  # upx will figure out whether it can compress the executable or not. We don't care if it works or not;
-  # it's a nice-to-have
+  # upx will figure out whether it can compress the executable or not.
+  #  We don't care if it works or not, so turn off bash fail-on-error temporarily
+  set +e
   upx -qqq $output
+  set -e
 
   if [[ -n "$COMPRESS_FILES" ]]; then
     if [[ -n "$SRCPATH" ]]; then 
